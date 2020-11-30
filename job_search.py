@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
 import csv
-import shutil
-from tempfile import NamedTemporaryFile
 """
 This will create a document that allows me to update my job search
 The spreadsheet will have fields for:
@@ -10,23 +8,12 @@ The spreadsheet will have fields for:
 company | date applied | email | company site |
 -----------------------------------------------
 """
-print("Lets add some jobs to our search.")
-
-
-# need conditional statements for CRUD operations
-# ask user if this is existing
-# skip beginning and add new row to document
-
-#dictionary contains our values
-jobApplied = {} #Global variable
+jobApplied = {}
 
 myFile = 'job_search.csv'
 
-tempfile = NamedTemporaryFile(mode='w',delete=False)
-
 fieldnames = ["Company", "Date Applied", "Website", "Email"]
 
-# questions to ask the user
 def usrQuest():
     while True:
         companyName = input("What is the name of the company ? :")
@@ -55,22 +42,25 @@ def usrQuest():
         elif usrChoice == 'n':
             break
 
-
-#create the csv document
-#if this is new, run this part(Tip: change to functions for different tasks)
 def newDocument():
     global csv_writer
-    with open(myFile,"w+") as csv_file,tempfile:
+    with open(myFile,"w+") as csv_file:
         csv_reader = csv.DictReader(csv_file, fieldnames)
-        csv_writer = csv.DictWriter(tempfile, fieldnames = fieldnames) #allows us to write to file. We pass csv file as argument
+        csv_writer = csv.DictWriter(csv_file, fieldnames = fieldnames) #allows us to write to file. We pass csv file as argument
         #header names
         usrQuest()
 
 def update_CSV():
     global csv_writer
-    with open(myFile,'a+') as update_obj,tempfile:
-        csv_reader = csv.DictReader(update_obj, fieldnames)
-        csv_writer = csv.DictWriter(tempfile, fieldnames = fieldnames)
+    with open(myFile,'a+',newline='') as update_obj:
+        csv_writer = csv.DictWriter(update_obj, fieldnames = fieldnames)
         usrQuest()
 
-shutil.move(tempfile.name, myFile)
+print("Are you creating a new file updating an existing one?")
+
+usr_choice = input("Enter 'N' for new document or 'U' to update existing")
+
+if usr_choice == 'n':
+    newDocument()
+elif usr_choice == 'u':
+    update_CSV()
